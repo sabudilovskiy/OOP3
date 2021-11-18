@@ -7,7 +7,6 @@
 
 #include <utility>
 #include <xstring>
-#include "predeclare_classes.h"
 class Item{
 private:
     std::string name;
@@ -15,29 +14,16 @@ private:
     double base_involvement;
     double base_popularity;
     int capacity;
-    int need_employes;
+    int effectiveness;
 public:
-    Item(std::string name, double base_price, int base_min_popularity, int base_max_popularity, int capacity,
-         int need_employes) : name(std::move(name)), base_price(base_price), base_involvement(base_min_popularity),
-                              base_popularity(base_max_popularity), capacity(capacity),
-                              need_employes(need_employes) {}
-    [[nodiscard]] const std::string &get_name() const {
-        return name;
-    }
-    [[nodiscard]] double get_base_price() const {
-        return base_price;
-    }
-    [[nodiscard]] double get_base_involvement() const {
-        return base_involvement;
-    }
-    [[nodiscard]] double get_base_popularity() const {
-        return base_popularity;
-    }
-    [[nodiscard]] int get_capacity() const {
-        return capacity;
-    }
-    [[nodiscard]] int get_one_employee() const {
-        return need_employes;
-    }
+    Item(std::string name, double base_price, double base_involvement, double base_popularity, int capacity,
+         int effectiveness);
+    [[nodiscard]] const std::string &get_name() const;
+    [[nodiscard]] double get_base_price() const;
+    [[nodiscard]] double get_base_involvement() const;
+    [[nodiscard]] double get_base_popularity() const;
+    [[nodiscard]] int get_capacity() const;
+    [[nodiscard]] int get_effectiveness() const;
+    [[nodiscard]] std::string get_info();
 };
 #endif //OOP3_ITEM_H

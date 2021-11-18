@@ -1,76 +1,63 @@
 #include <iostream>
-#include "Organization.h"
+#include <vector>
+#include "Item.h"
 #include "Support.h"
 #include <string>
-
-class ConsoleOrganization{
-    Organization* organization = nullptr;
-    int current_command;
-    enum commands{
-        EXIT, CREATE_SHOP, CREATE_CARGO, REMOVE_SELLER, CHECK_REMOVE_SELLER, GET_INFO, NEXT_DAY
-    };
-public:
-    ConsoleOrganization(Organization* organization):organization(organization);
-    void start(){
-        while (current_command != EXIT){
-            current_command = input<int>(
-                    [](int x) -> bool {return EXIT<=x&&x<=NEXT_DAY;},
-                    [](std::string x) -> int {return std::stoi(x);} ,
-                    std::string( "Введите, пожалуйста, номер того, что вы хотите сделать: \n0) Закончить игру. \n1)Открыть магазин\n2)Открыть склад\n3)Ликвидировать предприятие\n4)Проверить предеприятие на возможность ликвидации\n5)Получить сводку по балансу на счетах предприятий\n6)Начать следующий день"),
-                    std::string("Допущена ошибка, введите, пожалуйста, корректный номер: "));
-            std::cout << execute_command();
-        }
-    }
-    std::string execute_command(){
-        std::string answer;
-        std::string name;
-        int index;
-        switch (current_command) {
-            case EXIT:
-                return "";
-            case CREATE_SHOP:
-                std::cout << "Введите название магазина. ";
-                std::cin >> name;
-                return organization->create_shop(name);
-            case CREATE_CARGO:
-                std::cout << "Введите название магазина. ";
-                std::cin >> name;
-                return organization->create_cargo(name);
-            case REMOVE_SELLER:
-                index = input<int>(
-                        [](int x) -> bool {return x>=-1;},
-                        [](std::string x) -> int {return std::stoi(x);} ,
-                        std::string( "Введите, пожалуйста, номер ликвидируемого предприятия(-1 для отмены): "),
-                        std::string("Допущена ошибка, введите, пожалуйста, корректный номер: "));
-                if (index != -1){
-                    return organization->remove_seller(index);
-                }
-                else return std::string("Вы решили не ликвидировать предприятие.");
-            case CHECK_REMOVE_SELLER:
-                index = input<int>(
-                        [](int x) -> bool {return x>=-1;},
-                        [](std::string x) -> int {return std::stoi(x);} ,
-                        std::string( "Введите, пожалуйста, номер предприятия для проверки на возможность его ликвидации(-1 для отмены): "),
-                        std::string("Допущена ошибка, введите, пожалуйста, корректный номер: "));
-                if (index != -1){
-                    return organization->remove_seller(index);
-                }
-                else return std::string("Вы решили не проверять предприятие на возможность ликвидации.");
-            case GET_INFO:
-
-            case NEXT_DAY:
-                return organization->day();
-            default:
-                return "Ошибка.";
-        }
-    }
-};
-class ConsoleSeller{
-
-};
-
-
+#include <Organization.h>
+#include "ConsoleOrganization.h"
+#include <Windows.h>
 int main(){
-    Organization* test;
-    test->day();
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
+    int n = input<int>(
+            [](int x) -> bool {return x>=0;},
+            [](std::string x) -> int {return std::stoi(x);} ,
+            "Введите число доступных в игре товаров: ",
+            "Допущена ошибка при вводе, повторите ввод: ");
+    std::vector<Item> base;
+    for (int i = 0; i < n; i++){
+        std::cout << "Введите название товара: ";
+        std::string name;
+        std::cin >> name;
+        double price = input<double>(
+                [](double x) -> bool {return x>=0;},
+                [](std::string x) -> double {return std::stod(x);} ,
+                std::string("Введите цену товара: "),
+                std::string("Допущена ошибка при вводе, повторите ввод: "));
+        double involvement = input<double>(
+                [](double x) -> bool {return x>=0;},
+                [](std::string x) -> double {return std::stod(x);} ,
+                std::string("Введите вовлечённость товара: "),
+                std::string("Допущена ошибка при вводе, повторите ввод: "));
+        double popularity = input<double>(
+                [](double x) -> bool {return x>=0;},
+                [](std::string x) -> double {return std::stod(x);} ,
+                std::string("Введите популярность товара: "),
+                std::string("Допущена ошибка при вводе, повторите ввод: "));
+        while (popularity < involvement){
+            popularity = input<double>(
+                    [](double x) -> bool {return x>=0;},
+                    [](std::string x) -> double {return std::stod(x);} ,
+                    std::string("Популярность должна быть не меньше вовлечённости. Повторите ввод: "),
+                    std::string("Допущена ошибка при вводе, повторите ввод: "));
+        }
+        int capacity = input<int>(
+                [](int x) -> bool {return x>=0;},
+                [](std::string x) -> int {return std::stoi(x);} ,
+                std::string("Введите вместимость товара: "),
+                std::string("Допущена ошибка при вводе, повторите ввод: "));
+        int effectiveness = input<int>(
+                [](int x) -> bool {return x>=0;},
+                [](std::string x) -> int {return std::stoi(x);} ,
+                std::string("Введите эффективность товара: "),
+                std::string("Допущена ошибка при вводе, повторите ввод: "));
+        base.emplace_back(name, price, involvement, popularity, capacity, effectiveness);
+    }
+    double start_capital = input<double>(
+            [](double x) -> bool {return x>=0;},
+            [](std::string x) -> double {return std::stod(x);} ,
+            std::string("Введите стартовый капитал: "),
+            std::string("Допущена ошибка при вводе, повторите ввод: "));
+    Organization* org = new Organization(start_capital);
+    ConsoleOrganization(org, base).start();
 }
