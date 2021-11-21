@@ -31,21 +31,27 @@ std::string ConsoleSeller::execute_command() {
     switch (current_command) {
         case EXIT:
             return "";
-        case FINANCE:
+        case FINANCE: {
             ConsoleSellerFinance(seller).start();
             return "";
-        case ITEMS:
+        }
+        case ITEMS: {
             ConsoleSellerItems(seller, base).start();
             return "";
-        case EMPLOYEES:
+        }
+        case EMPLOYEES: {
             ConsoleSellerEmployees(seller).start();
             return "";
-        case SWITCH_AUTOREFILL:
+        }
+        case SWITCH_AUTOREFILL: {
             seller->switch_autorefill();
-        case RENAME:
+            return "";
+        }
+        case RENAME: {
             std::cout << "Введите новое название: ";
             std::cin >> name;
             seller->set_name(name);
-            return "Вы успешно переименовали предприятие.";
+            return "Вы успешно переименовали предприятие.\n";
+        }
     }
 }

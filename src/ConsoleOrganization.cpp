@@ -9,51 +9,62 @@ std::string ConsoleOrganization::execute_command() {
     std::string name;
     int index;
     switch (current_command) {
-        case EXIT:
+        case EXIT: {
             return "";
-        case CREATE_SHOP:
+        }
+        case CREATE_SHOP: {
             std::cout << "Введите название магазина(-1 для возврата назад):";
             std::cin >> name;
-            if (name!="-1") return organization->create_shop(name);
+            if (name != "-1") return organization->create_shop(name) + "\n";
             else return "";
-        case CREATE_CARGO:
+        }
+        case CREATE_CARGO: {
             std::cout << "Введите название склада(-1 для возврата назад): ";
             std::cin >> name;
-            if (name!="-1") return organization->create_cargo(name);
+            if (name != "-1") return organization->create_cargo(name) + "\n";
             else return "";
-        case REMOVE_SELLER:
+        }
+        case REMOVE_SELLER: {
             index = input<int>(
-                    [](int x) -> bool {return x>=-1;},
-                    [](std::string x) -> int {return std::stoi(x);} ,
-                    std::string( "Введите, пожалуйста, номер ликвидируемого предприятия(-1 для возврата назад): "),
+                    [](int x) -> bool { return x >= -1; },
+                    [](std::string x) -> int { return std::stoi(x); },
+                    std::string("Введите, пожалуйста, номер ликвидируемого предприятия(-1 для возврата назад): "),
                     std::string("Допущена ошибка, введите, пожалуйста, корректный номер: "));
-            if (index != -1){
-                return organization->remove_seller(index);
+            if (index != -1) {
+                return organization->remove_seller(index) + "\n";
+            } else return std::string("Вы решили не ликвидировать предприятие.\n");
+        }
+        case CHECK_REMOVE_SELLER: {
+            index = input<int>(
+                    [](int x) -> bool { return x >= -1; },
+                    [](std::string x) -> int { return std::stoi(x); },
+                    std::string(
+                            "Введите, пожалуйста, номер предприятия для проверки на возможность его ликвидации(-1 для возврата назад): "),
+                    std::string("Допущена ошибка, введите, пожалуйста, корректный номер: "));
+            if (index != -1) {
+                return organization->remove_seller(index) + "\n";
+            } else return std::string("Вы решили не проверять предприятие на возможность ликвидации.\n");
+        }
+        case GET_INFO: {
+            return "Баланс компании: " + std::to_string(organization->get_balance()) + "$\n" + organization->get_info() +
+                   "\n";
+        }
+        case MANAGE_SELLER: {
+            index = input<int>(
+                    [](int x) -> bool { return x >= -1; },
+                    [](std::string x) -> int { return std::stoi(x); },
+                    std::string("Введите, пожалуйста, номер предприятия для управления им(-1 для возврата назад:) "),
+                    std::string("Допущена ошибка, введите, пожалуйста, корректный номер: "));
+            if (index >= 0 && index < organization->get_own_numbers()) {
+                organization->start_seller_console(index, base);
+                return "";
             }
-            else return std::string("Вы решили не ликвидировать предприятие.");
-        case CHECK_REMOVE_SELLER:
-            index = input<int>(
-                    [](int x) -> bool {return x>=-1;},
-                    [](std::string x) -> int {return std::stoi(x);} ,
-                    std::string( "Введите, пожалуйста, номер предприятия для проверки на возможность его ликвидации(-1 для возврата назад): "),
-                    std::string("Допущена ошибка, введите, пожалуйста, корректный номер: "));
-            if (index != -1){
-                return organization->remove_seller(index);
-            }
-            else return std::string("Вы решили не проверять предприятие на возможность ликвидации.");
-        case GET_INFO:
-             return "Баланс компании: " + std::to_string(organization->get_balance()) + "\n" + organization->get_info() + "\n";
-        case MANAGE_SELLER:
-            index = input<int>(
-                    [](int x) -> bool {return x>=-1;},
-                    [](std::string x) -> int {return std::stoi(x);} ,
-                    std::string( "Введите, пожалуйста, номер предприятия для управления им(-1 для возврата назад:) "),
-                    std::string("Допущена ошибка, введите, пожалуйста, корректный номер: "));
-            if (index>=0 && index < organization->get_own_numbers()) organization->start_seller_console(index, base);
-            else if (index!=-1) return "Некорректный номер предприятия";
+            else if (index != -1) return "Некорректный номер предприятия\n";
             else return "";
-        case NEXT_DAY:
-            return organization->day();
+        }
+        case NEXT_DAY: {
+            return organization->day()+"\n";
+        }
         default:
             return "Ошибка.";
     }

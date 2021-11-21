@@ -12,13 +12,6 @@ void Seller::change_popularity(int index, double cof) {
     }
 }
 
-void Seller::change_popularity_all(double cof) {
-    for (int index = 0; index < number_items; index++){
-        cur_popularity[index] += cur_popularity[index] * cof;
-        if (cur_involvement > cur_popularity) cur_involvement = cur_popularity;
-    }
-}
-
 int Seller::get_employee() const {
     return employee;
 }
@@ -55,7 +48,7 @@ std::string Seller::close() {
             }
             dismiss_employees(employee);
             return "Предприятие прекратило свою работу. Для закрытия долгов предприятия были потрачены " + to_string(
-                    my_round(cur_balance, 2)) + "$";
+                    my_round(abs(cur_balance), 2)) + "$";
         }
         else{
             return "Нам не хватает денег для покрытия долгов предприятия.";
@@ -80,12 +73,15 @@ std::string Seller::switch_autorefill() {
 std::string Seller::get_info_about_item(int index) {
     std::string answer;
     if (0 <= index && index < number_items){
-        answer = "Лот № " + to_string(index + 1) + items[index].get_name()+ "\n";
+        answer = "Лот №" + to_string(index) + " " + items[index].get_name()+ "\n";
         answer += "Популярность: " + to_string(my_round(cur_popularity[index],2));
         answer += " Вовлеченность: " + to_string(my_round(cur_involvement[index],2)) + "\n";
-        answer += " Текущая цена : " + to_string(price[index]);
-        answer += " Базовая цена" + to_string(items[index].get_base_price());
+        answer += "Текущая цена: " + to_string(price[index]);
+        answer += " Базовая цена: " + to_string(items[index].get_base_price());
+        answer += " Вместимость: " + std::to_string(capacity[index]);
+        answer += " В наличии: " + std::to_string(balance_items[index]);
     }
+    else "Некорректный номер товара.";
     return answer;
 }
 
@@ -150,7 +146,6 @@ std::string Seller::check_remove_item(int index) {
         double plus = balance_items[index] * items[index].get_base_price() * 0.5;
         answer = "Вы избавитесь от " + items[index].get_name() + " в ассортименте и вернёте поставщику за половину стоимости  " + to_string(balance_items[index]) + "Таким образом, Вы получите " + to_string(
                 my_round(plus, 2))  + "$";
-
     }
     else {
         answer = "Некорректный номер товара. ";
@@ -162,7 +157,7 @@ std::string Seller::hire_employees(int number) {
     if (number * 300 <= balance){
         employee += number;
         balance -= number * 300;
-        return "Вы успешно наняли сотрудников. Потрачено на компенсации : " + to_string(number*300) + "$ ";
+        return "Вы успешно наняли сотрудников. Потрачено на первичные выплаты : " + to_string(number*300) + "$ ";
     }
     else return "Вы не можете позволить себе нанять сотрудников: требуется не менее " + to_string(number*300) + "$ на счету предприятия";
 }
@@ -217,4 +212,11 @@ std::string Seller::change_price(int index, double new_price) {
         else return "Некорректная цена.";
     }
     else return "Такого товара не существует.";
+}
+
+void Seller::change_involvement(int index, double cof) {
+    if (0 <= index && index < number_items){
+        cur_involvement[index] += cur_involvement[index] * cof;
+        if (cur_involvement > cur_popularity) cur_involvement = cur_popularity;
+    }
 }

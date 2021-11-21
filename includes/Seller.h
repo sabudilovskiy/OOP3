@@ -26,12 +26,12 @@ protected:
     //запрещаем создание родительского класса
     Seller() = default;
     void change_popularity(int index, double cof);
-    void change_popularity_all(double cof);
+    void change_involvement(int index, double cof);
     virtual std::string buy(int index, int count) = 0;
 public:
     [[nodiscard]] int get_employee() const;
     std::string check_close();
-    std::string close();
+    virtual std::string close();
     [[nodiscard]] const std::string &get_name() const;
     void set_name(const std::string &name);
     std::string switch_autorefill();
@@ -49,8 +49,8 @@ public:
     std::string refill_all();
     virtual std::string remove_item(int index) = 0;
     std::string check_remove_item(int index);
-    std::string hire_employees(int number);
-    static std::string check_hire_employees(int number);
+    virtual std::string hire_employees(int number);
+    virtual std::string check_hire_employees(int number);
     virtual std::string dismiss_employees(int number) = 0;
     virtual std::string check_dismiss_employees(int number) = 0;
     virtual std::string promote_all() = 0;
@@ -58,6 +58,7 @@ public:
     virtual std::string promote_item(int index) = 0;
     virtual std::string check_promote_item(int index) = 0;
     virtual std::string day() = 0;
+    virtual std::string up_capacity(int index) = 0;
     std::string receive_money(double money);
     std::string take_money(double money);
     double get_balance();

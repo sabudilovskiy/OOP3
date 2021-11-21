@@ -5,13 +5,12 @@
 #include <iostream>
 #include <random>
 #include <stdexcept>
-int my_random(double a, double b) {
+double my_random(double a, double b) {
     if (b!=a){
         std::random_device rd;
-        std::mt19937 mersenne(rd());
-        double cof = DBL_MAX/(b-a);
-        double random = (double)(mersenne()) / cof;
-        random+=a;
+        std::mt19937_64 mersenne(rd());
+        std::uniform_real_distribution<double> uid(a, b);
+        double random = uid(mersenne);
         return random;
     }
     else return b;

@@ -12,7 +12,7 @@ class ConsoleSellerItems {
     int current_command = REMOVE;
     std::vector<Item>&base;
     enum commands{
-        EXIT, REMOVE, ADD, INFO_ABOUT_ITEM, INFO_ABOUT_ADD_ITEMS, PROMOTE, CHANGE_PRICE, REFILL
+        EXIT, INFO_ABOUT_ITEM, INFO_ABOUT_ITEMS, REMOVE, ADD, INFO_ABOUT_ADD_ITEMS, PROMOTE, CHANGE_PRICE, UP_CAPACITY, REFILL
     };
     std::string execute_command();
 public:

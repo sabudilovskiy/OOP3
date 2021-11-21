@@ -9,6 +9,7 @@ std::string Shop::add_item(Item item) {
     std::string answer;
     if (number_items < employee*5 && balance >= 100){
         items.push_back(item);
+        price.push_back(item.get_base_price());
         cur_involvement.push_back(item.get_base_involvement());
         cur_popularity.push_back(item.get_base_popularity());
         capacity.push_back(item.get_capacity());
@@ -21,7 +22,7 @@ std::string Shop::add_item(Item item) {
         answer = "Вы не можете расширить ассортимент магазина: требуется иметь на счету магазина не менее 100$";
     }
     else{
-        answer = "Вы не можете расширить ассортимент магазина: персонал может обслужить лишь " + std::to_string(employee) + " позиций.";
+        answer = "Вы не можете расширить ассортимент магазина: персонал может обслужить лишь " + std::to_string(employee*5) + " позиций.";
     }
     return answer;
 
@@ -46,14 +47,15 @@ std::string Shop::buy(int index, int count) {
     if (0 <= index && index <= number_items){
         answer+=items[index].get_name();
         if (count <= balance_items[index]){
+            double income =  price[index] * count;
             balance += price[index] * count;
             balance_items[index] -= count;
-            answer += " Клиенты купили " + std::to_string(count) + " шт.\n";
+            answer += " Клиенты купили " + std::to_string(count) + " шт. Мы заработали: " + to_string(my_round(income, 2)) + "$\n";
         }
         else {
-            cur_popularity[index] -= my_random(0, 0.1*cur_popularity[index]);
+            cur_popularity[index] -= my_random(0.0, 0.1*cur_popularity[index]);
             if (cur_involvement[index] > cur_popularity[index]) cur_involvement[index] = cur_popularity[index];
-            answer += " Клиенты не смогли купить товар из-за его отсутствия. \n";
+            answer += " Клиенты не смогли купить товар из-за его отсутствия в достаточном количестве. \n";
         }
     }
     else answer = "Товара не существует. ";
@@ -124,8 +126,8 @@ std::string Shop::promote_all() {
         cost += pow(cur_popularity[index] / items[index].get_base_popularity(), 1.5) * 100;
     }
     if (balance >= cost){
-        for (int index; index < number_items; index++){
-            change_popularity(index, my_random(0, 1));
+        for (int index = 0; index < number_items; index++){
+            change_popularity(index, my_random(0.0, 1.0));
         }
         balance-=cost;
         answer  = "Вы провели рекламную кампанию стоимостью " + to_string(my_round(cost, 2)) +
@@ -148,10 +150,10 @@ std::string Shop::check_promote_all() {
 
 std::string Shop::promote_item(int index) {
     if (0 <= index && index < number_items){
-        double cost = pow(cur_popularity[index] / items[index].get_base_popularity(), 1.5) * 100;
+        double cost = pow(cur_involvement[index] / items[index].get_base_involvement(), 1.5) * 100;
         if (cost <= balance){
             balance -= cost;
-            change_popularity(index, my_random(0, 1));
+            change_involvement(index, my_random(0.0, 1.0));
             return "Мы провели рекламную кампанию стоимостью " + std::to_string(my_round(cost, 2));
         }
         else return "Мы не провели рекламную кампанию: требуется иметь на счету магазина не менее " + std::to_string(my_round(cost, 2));
@@ -162,7 +164,7 @@ std::string Shop::promote_item(int index) {
 std::string Shop::check_promote_item(int index) {
     std::string answer;
     if (0 <= index && index < number_items){
-        double cost = pow(cur_popularity[index] / items[index].get_base_popularity(), 1.5) * 100;
+        double cost = pow(cur_involvement[index] / items[index].get_base_involvement(), 1.5) * 100;
         return "Стоимость рекламы для этого товара: " + to_string(my_round(cost, 2));
     }
     else return "Некорректный номер товара. ";
@@ -170,9 +172,10 @@ std::string Shop::check_promote_item(int index) {
 }
 
 std::string Shop::day() {
-    std::string answer;
+    std::string answer = "Магазин " + name + " Баланс на начало дня: " + to_string(my_round(balance,2)) + "$\n";
     if (balance >= 0){
         for (int i = 8; i < 22; i++){
+            answer += std::to_string(i) + ":00\n";
             for (int j = 0; j < number_items; j++){
                 double x = price[j]/items[j].get_base_price();
                 answer += buy(j, (int)((my_random(cur_involvement[j], cur_popularity[j])) * pow(2, log(1/(2*x-1)))));
@@ -181,6 +184,22 @@ std::string Shop::day() {
     }
     balance -= employee * 25;
     answer += "На оплату зарплаты сотрудников потрачено " + to_string(employee*25) + "$\n";
-    if (auto_refill) answer+=refill_all();
+    if (auto_refill) answer+=refill_all() + "\n";
+    answer += "Баланс на конец дня: " + to_string(my_round(balance,2)) + "$\n";
     return answer;
+}
+
+std::string Shop::up_capacity(int index) {
+    if (0 <= index && index < number_items){
+        if (capacity[index] / items[index].get_capacity() == 1) {
+            if (balance > 500){
+                balance-=40;
+                capacity[index] *= 2;
+                return "Вы увеличили вместимость товара " + items[index].get_name();
+            }
+            else return "Вы не можете себе позволить увеличение вместимости: это стоит 500$";
+        }
+        else return "Вы не можете увеличить вместимость этого товара: магазин может увеличить вместимость лота всего один раз.";
+    }
+    else return "Некорректный номер товара.";
 }

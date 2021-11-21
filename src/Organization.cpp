@@ -78,7 +78,7 @@ int Organization::get_own_numbers() const {
 std::string Organization::get_info() {
     std::string answer;
     for (int index = 0; index < own_numbers; index++){
-        answer += to_string(index) + ") " + own[index]->get_name() + " " + to_string(my_round(own[index]->get_balance(),2));
+        answer += to_string(index) + ") " + own[index]->get_name() + " " + to_string(my_round(own[index]->get_balance(),2))+"$\n";
     }
     return answer;
 }

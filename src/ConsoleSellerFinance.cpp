@@ -7,16 +7,24 @@
 std::string ConsoleSellerFinance::execute_command() {
     double argument;
     switch (current_command) {
-        case EXIT:
+        case EXIT: {
             return "";
-        case GET_BALANCE:
-            return "На балансе предприятия " + to_string(my_round(seller->get_balance(),2)) + "\n";
-        case TAKE_MONEY:
-            argument = input<double>([](double x){return x>=0;}, [](std::string str){return stod(str);}, "Введите количество денег для перевода со счетов предприятия на счета компании: ", "Допущена ошибка, повторите ввод: ");
+        }
+        case GET_BALANCE: {
+            return "На балансе предприятия " + to_string(my_round(seller->get_balance(), 2)) + "$\n";
+        }
+        case TAKE_MONEY: {
+            argument = input<double>([](double x) { return x >= 0; }, [](std::string str) { return stod(str); },
+                                     "Введите количество денег для перевода со счетов предприятия на счета компании: ",
+                                     "Допущена ошибка, повторите ввод: ");
             return seller->take_money(argument) + "\n";
-        case RECEIVE_MONEY:
-            argument = input<double>([](double x){return x>=0;}, [](std::string str){return stod(str);}, "Введите количество денег для перевода со счетов компании на счета предприятия: ", "Допущена ошибка, повторите ввод: ");
+        }
+        case RECEIVE_MONEY: {
+            argument = input<double>([](double x) { return x >= 0; }, [](std::string str) { return stod(str); },
+                                     "Введите количество денег для перевода со счетов компании на счета предприятия: ",
+                                     "Допущена ошибка, повторите ввод: ");
             return seller->receive_money(argument) + "\n";
+        }
     }
 }
 

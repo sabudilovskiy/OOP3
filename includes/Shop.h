@@ -20,6 +20,7 @@ public:
     std::string check_promote_all() override;
     std::string promote_item(int index) override;
     std::string check_promote_item(int index) override;
+    std::string up_capacity(int index) override;
     std::string day() override;
 };
 #endif
